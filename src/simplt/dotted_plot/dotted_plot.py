@@ -43,7 +43,6 @@ def example_create_multi_group_dotted_plot(
         "second_group",
     ]  # add a label for each dataseries
     
-    print(multiple_y_series)
     plot_multiple_dotted_groups(
         extensions=extensions,
         filename=filename,
@@ -94,20 +93,22 @@ def plot_multiple_dotted_groups(
     # Geneterate lines.
     for i, group in enumerate(list(y_series.keys())):
     #for i, x_val in enumerate(list(y_series.keys())):
+        cum_x_vals = []
+        cum_y_vals = []
         for x_val,y_coords_of_x in y_series[group].items():
-            print(f'{i},x_val={x_val}')
-            print(f'{i},y_coords_of_x={y_coords_of_x}')
             x_vals=[x_val]*len(y_coords_of_x)
             y_vals=y_coords_of_x
-            ax.scatter(
-                x=x_vals,
-                y=y_vals,
-                #'r.', # Make it dots instead of lines.
-                label=label[i],
-                color=rgb_colour_sets[i],
-                marker=i+10,
+            cum_x_vals.extend(x_vals)
+            cum_y_vals.extend(y_vals)
+        ax.scatter(
+            x=cum_x_vals,
+            y=cum_y_vals,
+            #'r.', # Make it dots instead of lines.
+            label=label[i],
+            color=rgb_colour_sets[i],
+            marker=i+10,
 
-            )
+        )
 
     # configure plot layout
     plt.legend(loc=legendPosition)
