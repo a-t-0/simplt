@@ -6,7 +6,7 @@ example_create_multi_line_plot()     example_create_single_line_plot()
 at the bottom of this file.
 """
 from pprint import pprint
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import colorsys
 import matplotlib
@@ -25,23 +25,31 @@ def example_create_multi_group_dotted_plot(
 
     Copy paste it in your own code and modify the values accordingly.
     """
+    single_x_series = [3., 5.]
+    multiple_y_series:Dict[int,Dict[float,List[float]]] = {}
 
-    multiple_y_series = np.zeros((2, 2), dtype=int)
     # actually fill with data
-    multiple_y_series[0] = [1, 2]
+    multiple_y_series[0]={}
+    multiple_y_series[0][single_x_series[0]] = [1., 2., 5.]
+    multiple_y_series[0][single_x_series[1]] = [0., 6.]
+
+    multiple_y_series[1]={}
+    multiple_y_series[1][single_x_series[0]] = [3., 4.]
+    multiple_y_series[1][single_x_series[1]] = [1., 5.]
+
+    
     groupLabels = [
         "first_group",
         "second_group",
     ]  # add a label for each dataseries
-    single_x_series = [3, 5]
-
+    
+    print(multiple_y_series)
     plot_multiple_dotted_groups(
         extensions=extensions,
         filename=filename,
         label=groupLabels,
         legendPosition=0,
         output_dir=output_dir,
-        x=single_x_series,
         x_axis_label="x-axis label [units]",
         y_axis_label="y-axis label [units]",
         y_series=multiple_y_series,
@@ -56,10 +64,9 @@ def plot_multiple_dotted_groups(
     label: List,
     legendPosition: int,
     output_dir: str,
-    x: List,
     x_axis_label: str,
     y_axis_label: str,
-    y_series: np.ndarray,
+    y_series: Dict[int,Dict[float,List[float]]],
 ) -> None:
     """
 
@@ -82,17 +89,25 @@ def plot_multiple_dotted_groups(
     hsv_values = [(float(x)/len(y_series), 1, 1) for x in range(1,len(y_series)+1)]
     rgb_colour_sets = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_values))
 
+
+
     # Geneterate lines.
-    for i in range(0, len(y_series)):
-        ax.plot(
-            x,
-            y_series[i, :],
-            'r.', # Make it dots instead of lines.
-            label=label[i],
-            color=rgb_colour_sets[i],
-            marker=i+10,
-            
-        )
+    for i, group in enumerate(list(y_series.keys())):
+    #for i, x_val in enumerate(list(y_series.keys())):
+        for x_val,y_coords_of_x in y_series[group].items():
+            print(f'{i},x_val={x_val}')
+            print(f'{i},y_coords_of_x={y_coords_of_x}')
+            x_vals=[x_val]*len(y_coords_of_x)
+            y_vals=y_coords_of_x
+            ax.scatter(
+                x=x_vals,
+                y=y_vals,
+                #'r.', # Make it dots instead of lines.
+                label=label[i],
+                color=rgb_colour_sets[i],
+                marker=i+10,
+
+            )
 
     # configure plot layout
     plt.legend(loc=legendPosition)

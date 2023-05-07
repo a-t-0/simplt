@@ -48,7 +48,7 @@ create_box_plot(
 
 And creates:
 
-<img src="output/example_box.png" width="640" height="480" />
+<img src="https://github.com/a-t-0/simplt/blob/main/output/example_box.png" width="640" height="480" />
 
 ## Example Multi-Line Plot
 ```py
@@ -89,9 +89,9 @@ plot_multiple_lines(
 
 And creates a (colorblind-friendly) lineplot:
 
-<img src="output/example_line.png" width="640" height="480" />
+<img src="https://github.com/a-t-0/simplt/blob/main/output/example_line.png" width="640" height="480" />
 
-## Example Multi-Line Plot
+## Example Multi-Group Scatter Plot
 ```py
 python -m simplt --dot-plot
 ```
@@ -100,28 +100,32 @@ Which is the same as running:
 from simplt.dotted_plot.dotted_plot import plot_multiple_dotted_groups
 import numpy as np
 
-extensions=[
-    ".png",
-],
-filename="example_dots",
-output_dir="output",
+single_x_series = [3., 5.]
+multiple_y_series:Dict[int,Dict[float,List[float]]] = {}
 
-multiple_y_series = np.zeros((2, 2), dtype=int)
 # actually fill with data
-multiple_y_series[0] = [1, 2]
+multiple_y_series[0]={}
+multiple_y_series[0][single_x_series[0]] = [1., 2., 5.]
+multiple_y_series[0][single_x_series[1]] = [0., 6.]
+
+multiple_y_series[1]={}
+multiple_y_series[1][single_x_series[0]] = [3., 4.]
+multiple_y_series[1][single_x_series[1]] = [1., 5.]
+
+
+
 groupLabels = [
     "first_group",
     "second_group",
 ]  # add a label for each dataseries
-single_x_series = [3, 5]
 
+print(multiple_y_series)
 plot_multiple_dotted_groups(
     extensions=extensions,
     filename=filename,
     label=groupLabels,
     legendPosition=0,
     output_dir=output_dir,
-    x=single_x_series,
     x_axis_label="x-axis label [units]",
     y_axis_label="y-axis label [units]",
     y_series=multiple_y_series,
@@ -130,7 +134,7 @@ plot_multiple_dotted_groups(
 
 And creates a (colorblind-friendly) dotplot:
 
-<img src="output/example_dots.png" width="640" height="480" />
+<img src="https://github.com/a-t-0/simplt/blob/main/output/example_dots.png" width="640" height="480" />
 
 
 ## For Developers
