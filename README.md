@@ -56,7 +56,7 @@ python -m simplt --line-plot
 ```
 Which is the same as running:
 ```py
-from simplt.boxplot.boxplot import create_box_plot
+from simplt.line_plot.line_plot import line_plot
 import numpy as np
 
 extensions=[
@@ -91,6 +91,47 @@ And creates a (colorblind-friendly) lineplot:
 
 <img src="output/example_line.png" width="640" height="480" />
 
+## Example Multi-Line Plot
+```py
+python -m simplt --dot-plot
+```
+Which is the same as running:
+```py
+from simplt.dotted_plot.dotted_plot import plot_multiple_dotted_groups
+import numpy as np
+
+extensions=[
+    ".png",
+],
+filename="example_dots",
+output_dir="output",
+
+multiple_y_series = np.zeros((2, 2), dtype=int)
+# actually fill with data
+multiple_y_series[0] = [1, 2]
+groupLabels = [
+    "first_group",
+    "second_group",
+]  # add a label for each dataseries
+single_x_series = [3, 5]
+
+plot_multiple_dotted_groups(
+    extensions=extensions,
+    filename=filename,
+    label=groupLabels,
+    legendPosition=0,
+    output_dir=output_dir,
+    x=single_x_series,
+    x_axis_label="x-axis label [units]",
+    y_axis_label="y-axis label [units]",
+    y_series=multiple_y_series,
+)
+```
+
+And creates a (colorblind-friendly) dotplot:
+
+<img src="output/example_dots.png" width="640" height="480" />
+
 
 ## For Developers
 Below are pip-package publication instructions.
@@ -111,28 +152,30 @@ python -m twine upload dist/\*
 ```
 
 ### Developer pip install
+Build the pip package with:
 
 ```bash
-mkdir -p ~/bin
-cp snn_rebuild.sh ~/bin/snnrb
-chmod +x ~/bin/snnrb
+pip install --upgrade pip setuptools wheel
+pip install twine
 ```
 
-Then you can rebuild and locally re-install all 5 repositories with the command:
+Install the pip package locally with:
 
 ```bash
-snnrb
-```
-
-If you want to quickly test if your changes work, you can go into the root dir
-of this project and run:
-
-```bash
+rm -r dist
+rm -r build
 python3 setup.py sdist bdist_wheel
 pip install -e .
 ```
 
-that installs the latest changes into the pip package locally (into your conda
-environment).
+Upload the pip package to the world with:
+
+```bash
+rm -r dist
+rm -r build
+python3 setup.py sdist bdist_wheel
+python3 -m twine upload dist/\*
+```
+
 
 <!-- Un-wrapped URL's (Badges and Hyperlinks) -->

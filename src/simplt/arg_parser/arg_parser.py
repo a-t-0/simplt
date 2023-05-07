@@ -15,12 +15,12 @@ def parse_cli_args() -> argparse.Namespace:
     )
 
     parser.add_argument(
-        "-d",
-        "--delete-images",
+        "-r",
+        "--remove-images",
         action="store_true",
         default=False,
         help=(
-            "Delete the images in the (specified) output directory at start."
+            "Remove the images in the (specified) output directory at start."
         ),
     )
 
@@ -37,7 +37,15 @@ def parse_cli_args() -> argparse.Namespace:
         "--line-plot",
         action="store_true",
         default=False,
-        help=("Create a box-plot based on your input data."),
+        help=("Create a colour-blind friendly multi-line plot."),
+    )
+
+    parser.add_argument(
+        "-d",
+        "--dot-plot",
+        action="store_true",
+        default=False,
+        help=("Create a dotted with multiple groups plot."),
     )
 
     parser.add_argument(

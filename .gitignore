@@ -1,1 +1,4 @@
 **_pycache__
+build/*
+dist/*
+*simplt.egg-info

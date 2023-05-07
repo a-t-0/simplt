@@ -1,5 +1,6 @@
 """Completes the tasks specified in the arg_parser."""
 import argparse
+from src.simplt.dotted_plot.dotted_plot import example_create_multi_group_dotted_plot
 
 from typeguard import typechecked
 
@@ -18,7 +19,7 @@ def process_args(args: argparse.Namespace, default_output_path: str) -> None:
     print(f"TODO: create: {default_output_path}")
 
     # Delete output images if desired.
-    if args.delete_images:
+    if args.remove_images:
         print("TODO: delete images.")
 
     if args.box_plot:
@@ -36,6 +37,15 @@ def process_args(args: argparse.Namespace, default_output_path: str) -> None:
                 ".png",
             ],
             filename="example_line",
+            output_dir=default_output_path,
+        )
+    
+    if args.dot_plot:
+        example_create_multi_group_dotted_plot(
+            extensions=[
+                ".png",
+            ],
+            filename="example_dots",
             output_dir=default_output_path,
         )
 
