@@ -1,202 +1,99 @@
-# Spiking Neural Network Performance Tool
+# Simple Python plot
 
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3106/)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Code Coverage](https://codecov.io/gh/a-t-0/snn/branch/main/graph/badge.svg)](https://codecov.io/gh/a-t-0/snnalgorithms)
 
-This module compares SNN \[algorithms\] to their default/Neumann implementations.
-The user can specify an SNN and "normal" algorithm which take as input a
-networkx graph, and compute some graph property as output. The output of the
-SNN is then compared to the "normal" algorithm as "ground truth", in terms of:
+Call this pip package to easily create:
+ - a boxplot
+ - a multi-line plot
+ - a latex table
 
-- Score\*: How many results the SNN algorithm computed correctly (from a set of input
-  graphs).
-- Runtime
-- Energy Complexity (nr of spikes)
-- Space Complexity (nr of neurons)
-- Connectivity (nr of synapses)
-- Radiation Robustness
+## Example Boxplot
+```py
+python -m simplt --box-plot
+```
+Which is the same as running:
+```py
+from simplt.boxplot.boxplot import create_box_plot
+import numpy as np
 
-\*In theory, the score should always be 100% for the SNN, as it should be an
-exact SNN implementation of the ground truth algorithm. This comparison is
-mainly relevant for the additions of brain adaptation and simulated radiation.
+extensions=[
+    ".png",
+],
+filename="example_box",
+output_dir="output",
 
-## Example
+# Fixing random state for reproducibility
+np.random.seed(7)
 
-Below is an example of the SNN behaviour of the MDSA algorithm without
-adaptation, without radiation, on a (non-triangular) input graph of 5 nodes.
-<img src="example.gif" width="1280" height="960" />
+# Generate dummy data.
+first = [39, 44, 50, 50, 58, 63]
+second = [80, 100, 100, 120]
 
-The green dots are when the neurons spike, non-spiking neurons are yellow.
+# Add a name for each boxplot for in the legend, and y values.
+y_series = {"data_1": first, "data_2": second}
 
-## Brain adaptation
-
-For each SNN algorithm that the user specifies, the user can also specify a
-form of brain-inspired adaptation. This serves to increase the robustness of
-the SNN against radiation effects. The \[brain-adaptation\] can be called from a
-separate pip package called: `snnadaptation`.
-
-## Radiation
-
-A basic form of \[radiation\] effects is modelled on the SNNs. For example,
-radiation is modelled as yielding permanent activity termination for random
-neurons.
-
-It is noted that the accuracy of the modelling of the neuronal effects
-induced by the radiation is a function of the underlying hardware platforms.
-For example, on the Intel Loihi chips, the memory/routing and computations
-are somewhat intertwined from what I understood. This would suggest that
-radiation effects may yield errors that prevent a computation being executed
-at all, instead of a computation being corrupted, if for example a memory
-address is corrupted. (If that memory, for example, were to orchestrate some
-group of neurons to do something, but instead orchestrates an inactive set of
-neurons to perform some computation). In such cases, "neuronal- & synaptic"
-adaptation could be the best in the world, but nothing would happen with it if
-the neurons don't get the right input/send the output to the wrong place.
-
-In hardware platforms where neurons and synapses have a more physical
-implementation on chip, the adaptation may be more effective to increase the
-radiation robustness.
-
-## Backends
-
-Since the effectiveness of the adaptation mechanisms, in terms of radiation
-robustness, is a function of neuromorphic hardware platform, multiple \[backends\]
-are supported. These backends also allow for different neuronal and synaptic
-models. Currently the following backends are supported:
-
-- A self-made networkx SNN simulator (LIF-neurons)
-- Lava-nc simulator v0.5.0 (LIF-neurons)
-
-## Algorithms
-
-Different SNN implementations may use different encoding schemes, such as
-sparse coding, population coding and/or rate coding. In population coding,
-adaptation may be realised in the form of larger populations, whereas in rate
-coding, adaptation may be realised through varying the spike-rate. This implies
-that different algorithms may benefit from different types of adaptation.
-Hence, an overview is included of the implemented SNN algorithms and their
-respective compatibilities with adaptation and radiation implementations:
-
-| Algorithm                            | Encoding | Adaptation | Radiation    |
-| ------------------------------------ | -------- | ---------- | ------------ |
-| Minimum Dominating Set Approximation | Sparse   | Redundancy | Neuron Death |
-|                                      |          |            |              |
-|                                      |          |            |              |
-
-### Minimum Dominating Set Approximation
-
-This is an implementation of the distributed algorithm presented by Alipour et al.
-
-- *Input*: Non-triangle, planar Networkx graph. (Non triangle means there
-  should not be any 3 nodes that are all connected with each other (forming a
-  triangle)). Planar means that if you lay-out the graph on a piece of paper, no
-  lines intersect (that you can roll it out on a 2D plane).
-- *Output*: A set of nodes that form a dominating set in the graph.
-
-*Description:* The algorithm basically consists of `k` rounds, where you can
-choose `k` based on how accurate you want the approximation to be, more rounds
-(generally) means more accuracy. At the start each node `i` gets 1 random
-number `r_i`. This is kept constant throughout the entire algorithm. Then for
-the first round:
-
-- Each node `i` computes how many neighbours (degree) `d_i` it has.
-- Then it adds `r_i+d_i=w_i`.
-  In all consecutive rounds:
-- Each node `i` "computes" which neighbour has the highest weight `w_j`, and
-  gives that node 1 mark/point. Then each node `i` has some mark/score `m_i`.
-  Next, the weight `w_i=r_i+m_i` is computed (again) and the next round starts.
-  This last round is repeated until `k` rounds are completed. At the end, the
-  nodes with a non-zero mark/score `m_i` are selected to form the dominating set.
-
-## Experiment Stages
-
-The experiment generates some input graphs, the SNN algorithm, a copied SNN
-with some form of adaptation, and two copies with radiation (one with-/out
-adaptation). Then it simulates those SNNs for "as long as it takes" (=implicit
-in the algorithm specification), and computes the results of these 4 SNNs based
-on the "ground truth" Neumann/default algorithm.
-
-This experiment is executed in 4 stages:
-
-Input: Experiment configuration. Which consists of:
-SubInput: Run configuration within an experiment.
-Stage 1: Create networkx graphs that will be propagated.
-Stage 2: Create propagated networkx graphs (at least one per timestep).
-Stage 3: Visaualisation of the networkx graphs over time.
-Stage 4: Post-processed performance data of algorithm and adaptation
-mechanism.
-
-## Running Experiment
-
-First satisfy the prerequisites:
-
-```bash
-pip install simplt
-pip install https://github.com/a-t-0/lava/archive/refs/tags/v0.5.1.tar.gz
-ulimit -n 800000
+create_box_plot(
+    extensions=extensions,
+    filename=filename,
+    legendPosition=0,
+    output_dir=output_dir,
+    x_axis_label="x-axis label [units]",
+    y_axis_label="y-axis label [units]",
+    y_series=y_series,
+)
 ```
 
-You can run the experiment with command:
+And creates:
 
-```bash
-python -m src.simplt -e mdsa_long_no_overwrite -v -x png
+<img src="output/example_box.png" width="640" height="480" />
+
+## Example Multi-Line Plot
+```py
+python -m simplt --line-plot
+```
+Which is the same as running:
+```py
+from simplt.boxplot.boxplot import create_box_plot
+import numpy as np
+
+extensions=[
+    ".png",
+],
+filename="example_line",
+output_dir="output",
+
+multiple_y_series = np.zeros((2, 2), dtype=int)
+# actually fill with data
+multiple_y_series[0] = [1, 2]
+lineLabels = [
+    "first-line",
+    "second_line",
+]  # add a label for each dataseries
+single_x_series = [3, 5]
+
+plot_multiple_lines(
+    extensions=extensions,
+    filename=filename,
+    label=lineLabels,
+    legendPosition=0,
+    output_dir=output_dir,
+    x=single_x_series,
+    x_axis_label="x-axis label [units]",
+    y_axis_label="y-axis label [units]",
+    y_series=multiple_y_series,
+)
 ```
 
-which is the same as:
+And creates a (colorblind-friendly) lineplot:
 
-```bash
-python -m src.simplt --experiment-settings-name \
-mdsa_size3_m1 -visualise-snn --export-images png
-```
+<img src="output/example_line.png" width="640" height="480" />
 
-or:
 
-```bash
-python -m src.simplt -e mdsa_long_no_overwrite
-```
-
-For more info, run:
-
-```bash
-python -m src.simplt --help
-```
-
-And run tests with:
-
-```bash
-python -m pytest
-```
-
-or to see live output, on any tests filenames containing substring: `results`:
-
-```bash
-python -m pytest tests/sparse/MDSA/test_snn_results_with_adaptation.py --capture=tee-sys
-
-```
-
-This generates the graphs from the default experiment configurations, and
-outputs the graphs in json format to the `results/` directory, and outputs
-the graph behaviour to: `latex/Images/graphs/`.
-
-## Test Coverage
-
-Developers can use:
-
-```bash
-conda env create --file environment.yml
-conda activate simplt
-ulimit -n 800000
-python -m pytest
-```
-
-Currently the test coverage is `65%`. For type checking:
-
-```bash
-mypy --disallow-untyped-calls --disallow-untyped-defs tests/export_results/performed_stage/test_performed_stage_TTFF.py
-```
-
+## For Developers
+Below are pip-package publication instructions.
 ### Releasing pip package update
 
 To udate the Python pip package, one can first satisfy the following requirements:

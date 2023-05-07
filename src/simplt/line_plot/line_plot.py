@@ -5,7 +5,7 @@ For copy-pastable examples, see:     example_create_a_table()
 example_create_multi_line_plot()     example_create_single_line_plot()
 at the bottom of this file.
 """
-from typing import List
+from typing import Any, List, Optional
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -76,7 +76,7 @@ def plot_multiple_lines(
     ax = fig.add_subplot(111)
 
     # Set line colours in plot object.
-    set_cmap(plt, len(y_series[:, 0]))
+    set_cmap(some_plt=plt, nr_of_colours=len(y_series[:, 0]), name="hsv")
 
     # Generate line types.
     lineTypes = generateLineTypes(y_series)
@@ -106,9 +106,11 @@ def plot_multiple_lines(
 # how-to-generate-random-colors-in-matplotlib
 @typechecked
 def set_cmap(
-    some_plt: matplotlib.pyplot,
+    *,
+    #some_plt: matplotlib.pyplot,
+    some_plt: Any,
     nr_of_colours: int,
-    name: str = "hsv",
+    name:str,
 ) -> None:
     """Returns a function that maps each index in 0, 1, ..., n-1 to a distinct
     RGB color; the keyword argument name must be a standard mpl colormap name.

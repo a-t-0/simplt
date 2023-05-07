@@ -19,7 +19,7 @@ def example_box_plot(
     # Fixing random state for reproducibility
     np.random.seed(7)
 
-    # fake up some data
+    # Generate dummy data.
     first = [39, 44, 50, 50, 58, 63]
     second = [80, 100, 100, 120]
 
@@ -122,6 +122,6 @@ def create_box_plot(
     plt.xlabel(x_axis_label)
     plt.ylabel(y_axis_label)
     for extension in extensions:
-        plt.savefig(f"{output_dir}/{filename}.{extension}")
+        plt.savefig(f"{output_dir}/{filename}{extension}")
     plt.clf()
     plt.close()
