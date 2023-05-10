@@ -1,13 +1,13 @@
 """Completes the tasks specified in the arg_parser."""
 import argparse
-from src.simplt.dotted_plot.dotted_plot import example_create_multi_group_dotted_plot
+from simplt.dotted_plot.dotted_plot import example_create_multi_group_dotted_plot
 
 from typeguard import typechecked
 
-from src.simplt.box_plot.box_plot import example_box_plot
-from src.simplt.export_plot import create_target_dir_if_not_exists
-from src.simplt.latex_table.latex_table import example_create_a_table
-from src.simplt.line_plot.line_plot import example_create_multi_line_plot
+from simplt.box_plot.box_plot import example_box_plot
+from simplt.export_plot import create_target_dir_if_not_exists
+from simplt.latex_table.latex_table import example_create_a_table
+from simplt.line_plot.line_plot import example_create_multi_line_plot
 
 
 @typechecked

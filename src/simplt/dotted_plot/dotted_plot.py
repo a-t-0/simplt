@@ -5,15 +5,14 @@ For copy-pastable examples, see:     example_create_a_table()
 example_create_multi_line_plot()     example_create_single_line_plot()
 at the bottom of this file.
 """
-from pprint import pprint
-from typing import Any, Dict, List, Optional
+
+from typing import  Dict, List,  Union
 
 import colorsys
 import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib import lines
-from src.simplt.line_plot.line_plot import set_cmap
+
+
 from typeguard import typechecked
 
 
@@ -26,6 +25,7 @@ def example_create_multi_group_dotted_plot(
     Copy paste it in your own code and modify the values accordingly.
     """
     single_x_series = [3., 5.]
+    # TODO: put label name instead of integer as group identifier.
     multiple_y_series:Dict[int,Dict[float,List[float]]] = {}
 
     # actually fill with data
@@ -65,7 +65,7 @@ def plot_multiple_dotted_groups(
     output_dir: str,
     x_axis_label: str,
     y_axis_label: str,
-    y_series: Dict[int,Dict[float,List[float]]],
+    y_series: Dict[Union[float,int,str],Dict[float,List[float]]],
 ) -> None:
     """
 
@@ -106,7 +106,7 @@ def plot_multiple_dotted_groups(
             #'r.', # Make it dots instead of lines.
             label=label[i],
             color=rgb_colour_sets[i],
-            marker=i+10,
+            marker=i,
 
         )
 
